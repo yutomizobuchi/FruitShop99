@@ -1,23 +1,31 @@
 Rails.application.routes.draw do
-  # 新商品
-  get "products/new"
-  post 'products', to: 'products#create' # 登録
+  get "carts/show"
+  get "carts/index"
+  get "orders/new"
+  get "mypage/show"
+  # ユーザー認証
+  devise_for :users
 
-  # 商品一覧
-  get 'products', to: 'products#index'
+  # マイページ
+  resources :mypage, only: [:show]
 
-  # 商品詳細
-  get 'products/:id', to: 'products#show', as: 'product'
+  # 商品関係
+  resources :products
 
-  # 商品編集
-  get 'products/:id/edit', to: 'products#edit', as: 'edit_product'
-  patch 'products/:id', to: 'products#update' # 編集
+  # 注文関連
+  resources :orders, only: [:index, :new, :create] do 
+    collection do
+      post :confirm   # 注文確認
+    end
 
-  # 商品削除
-  delete 'products/:id', to: 'products#destroy', as: 'destroy_product'
-  
+    member do
+      get :complete  # 注文完了
+    end
+  end
+
   # トップページ
   root to: "homes#top"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
